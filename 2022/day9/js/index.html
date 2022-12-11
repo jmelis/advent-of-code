@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>day9</title>
+    <style>
+        .cell {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            text-align: center;
+            margin: 4px;
+            font-family: monospace
+        }
+    </style>
+  </head>
+  <body>
+    <div id="content"></div>
+	<script>
+        const SIZE = 10;
+
+        function render(knots) {
+            for (var y=SIZE; y>-SIZE-1; y--) {
+                for (var x=-SIZE; x<SIZE+1; x++) {
+                    var label = ".";
+                    var idx = knots.findIndex(el => el[0] == x && el[1] == y);
+
+                    if (idx != -1) {
+                        label = idx;
+                    }
+
+                    if (label == 0) {
+                        label = "H";
+                    }
+
+                    document.getElementById(btoa(`${x},${y}`)).innerHTML = label;
+                }
+            }
+
+        }
+
+        function chase(head, tail) {
+            var [hx, hy] = head;
+            var [tx, ty] = tail;
+
+            if (hx > tx) {
+                tx++;
+            } else if (hx < tx) {
+                tx--;
+            }
+
+            if (hy > ty) {
+                ty++;
+            } else if (hy < ty) {
+                ty--;
+            }
+
+            return [tx, ty];
+        }
+
+        // setup grid
+        var content = document.getElementById('content');
+        for (var y=SIZE; y>-SIZE-1; y--) {
+            var row = document.createElement("div");
+            row.className = "row";
+
+            for (var x=-SIZE; x<SIZE+1; x++) {
+                var el = document.createElement("div");
+                el.className = "cell";
+                el.id = btoa(`${x},${y}`);
+                row.appendChild(el);
+            }
+
+            content.appendChild(row);
+        }
+
+        // setup knots array
+        var knots = Array.apply(null, Array(10)).map(() => [0,0]);
+
+        // listen on arrows
+        document.addEventListener('keydown', (event) => {
+            // move head
+            switch(event.code) {
+                case 'ArrowLeft':
+                    knots[0][0] = knots[0][0] - 1;
+                    break;
+                case 'ArrowUp':
+                    knots[0][1] = knots[0][1] + 1;
+                    break;
+                case 'ArrowRight':
+                    knots[0][0] = knots[0][0] + 1;
+                    break;
+                case 'ArrowDown':
+                    knots[0][1] = knots[0][1] - 1;
+                    break;
+            }
+
+            // move tail
+            for (var i=1; i<knots.length; i++) {
+                // stop if touching
+                if (Math.abs(knots[i][0] - knots[i-1][0]) <= 1 && Math.abs(knots[i][1] - knots[i-1][1]) <= 1) {
+                    break;
+                }
+                knots[i] = chase(knots[i-1], knots[i]);
+            }
+
+            render(knots);
+        }, false);
+
+        // initial render
+        render(knots);
+    </script>
+  </body>
+</html>
