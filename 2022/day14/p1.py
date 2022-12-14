@@ -1,26 +1,4 @@
-import sys
-import os
-
 data = open('input.txt').read().strip().split("\n")
-
-
-def render(rocks, resting_sand, current_pos=(-1,-1)):
-    y_min = 0
-    y_max = max([r[1] for r in rocks]) + 1
-    x_min = min([r[0] for r in rocks]) - 1
-    x_max = max([r[0] for r in rocks]) + 1
-
-    for y in range(y_min, y_max+1):
-        for x in range(x_min, x_max+1):
-            if (x,y) in rocks:
-                char = "#"
-            elif (x,y) in resting_sand or (x,y) == current_pos:
-                char = "o"
-            else:
-                char = "."
-            sys.stdout.write(char)
-        print()
-
 rocks = set([])
 resting_sand = set([])
 for l in data:
@@ -38,23 +16,16 @@ for l in data:
         for x in range(xvals[0], xvals[1]+1):
             for y in range(yvals[0], yvals[1]+1):
                 rocks.add((x,y))
-
 end = False
 while True:
     if end:
         break
     current_pos = (500,0)
-
-    # os.system("clear")
-    # render(rocks, resting_sand, current_pos)
-    # input()
     while True:
-
         # stop if we are out of bounds
         if current_pos[1] > max([r[1] for r in rocks]):
             end = True
             break
-
         # attempt to go down
         down = (current_pos[0], current_pos[1]+1)
         if down not in rocks and down not in resting_sand:
